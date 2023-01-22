@@ -53,6 +53,10 @@ public class SeleniumScenarioTest {
     @Autowired
     ProductService productService;
 
+    @Test
+    public void testServiceInit(){
+        ExamAssert.assertEquals("products not initialized",10,this.productService.listAllProducts().size());
+    }
 
     @Test
     public void test1_list() {

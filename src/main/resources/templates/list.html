@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>WP Exam</title>
 </head>
@@ -7,21 +7,21 @@
 
 <div>
     <!-- The form below should invoke the method ProductsController.showProducts -->
-    <form id="filter-form">
+    <form id="filter-form" >
 
         <label for="nameSearch">Name</label>
-        <input id="nameSearch" type="text" name=""/>
+        <input id="nameSearch" type="text" name="nameSearch"/>
         <label for="categoryId">Category</label>
-        <select id="categoryId" name="">
+        <select id="categoryId" name="categoryId">
             <option value="">All</option>
             <!-- For each category you should have one <option> like below  -->
-            <option value="[cat.ID]"> [cat.name]</option>
+            <option th:each="cat: ${categories}" th:value="${cat.id}" th:text="${cat.name}"> [cat.name]</option>
         </select>
         <button id="filter" type="submit">Filter</button>
     </form>
     <div>
         <!-- ProductsController.showAdd -->
-        <a href="" class="add-item">
+        <a href="/products/add" class="add-item" sec:authorize="hasRole('ROLE_ADMIN')">
             Add new product
         </a>
     </div>
@@ -35,24 +35,25 @@
             <th>Actions</th>
         </tr>
         <!-- For each product you should have one <tr> like below -->
-        <tr class="item">
-            <td>[prod.name]</td>
-            <td>[prod.price]</td>
-            <td>[prod.quantity]</td>
+        <tr class="item" th:each="prod: ${products}">
+            <td th:text="${prod.name}">[prod.name]</td>
+            <td th:text="${prod.price}">[prod.price]</td>
+            <td th:text="${prod.quantity}">[prod.quantity]</td>
             <td>
                 <ul>
                     <!-- For each product's category you should display one <li> element like the one below -->
-                    <li>[cat.name]</li>
+                    <li th:each="cat: ${prod.categories}" th:text="${cat.name}">[cat.name]</li>
                 </ul>
             </td>
-            <td>[prod.creator]</td>
+            <td th:text="${prod.creator?.username}">[prod.creator.username]</td>
             <td>
                 <!-- ProductsController.delete -->
-                <form>
+                <form method="POST" th:action="@{'/products/{id}/delete' (id=${prod.id})}" sec:authorize="hasRole('ROLE_ADMIN')">
                     <button type="submit" class="delete-item">Delete</button>
                 </form>
                 <!-- ProductsController.showEdit -->
-                <a href="" class="edit-item">Edit</a>
+
+                <a th:href="@{'/products/{id}/edit' (id=${prod.id})}" class="edit-item" sec:authorize="hasRole('ROLE_ADMIN')">Edit</a>
             </td>
         </tr>
     </table>
